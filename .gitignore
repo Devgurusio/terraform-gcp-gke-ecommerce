@@ -7,3 +7,13 @@
 
 # .tfvars files
 *.tfvars
+
+# OSX trash
+.DS_Store
+._*
+
+# IntelliJ IDEA files
+.idea/
+
+# Private keys
+/keys/*
