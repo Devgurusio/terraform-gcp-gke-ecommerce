@@ -15,15 +15,22 @@ variable "cluster_name_suffix" {
   default     = ""
 }
 
+variable "regional" {
+  type        = bool
+  description = "Whether is a regional cluster (zonal cluster if set false. WARNING: changing this after cluster creation is destructive!)"
+  default     = true
+}
+
 variable "region" {
   type        = string
   description = "The region to host the cluster in"
+  default     = null
 }
 
 variable "zones" {
   type        = list(string)
   description = "The zone to host the cluster in (required if is a zonal cluster)"
-  default = []
+  default     = []
 }
 
 variable "master_ipv4_cidr_block" {
