@@ -128,3 +128,10 @@ variable "oauth_scopes" {
     "https://www.googleapis.com/auth/cloud_debugger",
   ]
 }
+
+
+variable "istio_config" {
+  type        = bool
+  description = "Enable istio addon"
+  default     = false
+}

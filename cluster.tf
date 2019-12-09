@@ -50,6 +50,12 @@ resource "google_container_cluster" "primary" {
     }
   }
 
+  addons_config {
+    istio_config {
+      disabled = ! var.istio_config
+    }
+  }
+
   depends_on = [google_compute_router_nat.advanced-nat, google_compute_router.router]
 }
 

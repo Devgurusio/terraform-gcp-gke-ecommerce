@@ -38,7 +38,7 @@ resource "google_compute_router_nat" "advanced-nat" {
   udp_idle_timeout_sec               = "30"
   icmp_idle_timeout_sec              = "30"
   subnetwork {
-    name                    = "${google_compute_subnetwork.subnetwork.self_link}"
+    name                    = google_compute_subnetwork.subnetwork.self_link
     source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
   }
 
