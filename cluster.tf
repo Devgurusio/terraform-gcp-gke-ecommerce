@@ -1,9 +1,8 @@
 ## Private & Regional Cluster
 resource "google_container_cluster" "primary" {
-  name           = "${var.project_id}-cluster${var.cluster_name_suffix}"
-  location       = local.location
-  node_locations = local.node_locations
-  provider       = google-beta
+  name     = "${var.project_id}-cluster${var.cluster_name_suffix}"
+  location = local.location
+  provider = google-beta
   # So we create the smallest possible default node pool and immediately delete it. Using node pools
   remove_default_node_pool = true
   initial_node_count       = 1
@@ -38,6 +37,7 @@ resource "google_container_cluster" "primary" {
     }
   }
   lifecycle {
+    prevent_destroy = true
     ignore_changes = [
       node_version,
       resource_labels,
@@ -60,19 +60,27 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_nodes" {
-  name           = "${var.project_id}-node-pool${var.cluster_name_suffix}"
-  project        = var.project_id
-  location       = local.location
-  node_locations = local.node_locations
-  provider       = google-beta
-  cluster        = google_container_cluster.primary.name
-  node_count     = var.gke_auto_min_count
+  name       = "${var.project_id}-node-pool${var.cluster_name_suffix}"
+  project    = var.project_id
+  location   = local.location
+  provider   = google-beta
+  cluster    = google_container_cluster.primary.name
+  node_count = var.gke_auto_min_count
 
   node_config {
     oauth_scopes = var.oauth_scopes
     disk_size_gb = var.node_pool_disk_size
     preemptible  = var.gke_preemptible
     machine_type = var.gke_instance_type
+    labels = {
+      project     = var.project_id
+      environment = var.environment
+      tenant      = "global"
+    }
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+    tags = [var.environment]
   }
 
   management {
@@ -83,6 +91,16 @@ resource "google_container_node_pool" "primary_nodes" {
   autoscaling {
     min_node_count = var.gke_auto_min_count
     max_node_count = var.gke_auto_max_count
+  }
+
+  lifecycle {
+    ignore_changes = [
+      node_count,
+      node_config.0.labels,
+      node_config.0.metadata,
+      node_config.0.metadata.disable-legacy-endpoints
+    ]
+    create_before_destroy = true
   }
 }
 

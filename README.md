@@ -1,5 +1,12 @@
 # gke-commerce-bootstrap
-Google Kubernetes Engine starter kit to bootstrap an e-commerce site based on microservices
+Google Kubernetes Engine starter kit to bootstrap an e-commerce site based on microservices.
+Differences with official cluster:
+* Prevent cluster destroy
+* TODO: Network creation controlling the external IPs
+* Environment naming suffix added
+* Delete the default cluster
+* We always modify the same node pool, do not create and detroy pools like example/official-beta-private-cluster-zonal-ecommerce
+* We don't include local scripts to validate readiness of the cluster
 
 ## Modules
 To facilitate the creation of Google Cloud components we have different modules based on the Google Foundation Kit
