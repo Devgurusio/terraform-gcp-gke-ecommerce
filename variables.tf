@@ -36,31 +36,61 @@ variable "zones" {
 variable "master_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Master Nodes"
-  default     = "10.0.1.0/28"
+  default     = "172.16.0.0/28"
 }
 
 variable "cluster_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Kubernetes Pods"
-  default     = "10.13.0.0/20"
+  default     = "192.168.0.0/18"
 }
 
 variable "services_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Kubernetes services"
-  default     = "10.13.16.0/20"
+  default     = "192.168.64.0/18"
 }
 
 variable "subnet_ip_cidr_range" {
   type        = string
-  description = "IPv4 CIDR Block for SubNetwork"
-  default     = "192.168.16.0/20"
+  description = "IPv4 CIDR Block for Subnetwork"
+  default     = "10.160.0.0/17"
 }
 
 variable "nat_ip_count" {
   type        = number
   description = "The number of NAT IPs"
   default     = 1
+}
+
+variable "min_ports_per_vm" {
+  type        = string
+  description = "Max number of concurrent outgoing request to IP:PORT_PROTOCOL per VM"
+  default     = "8192"
+}
+
+variable "tcp_transitory_idle_timeout_sec" {
+  type        = string
+  description = "The tcp trans idle timeout in sec used by the nat gateway"
+  default     = "30"
+}
+
+variable "tcp_established_idle_timeout_sec" {
+  type        = string
+  description = "The tcp established idle timeout in sec used by the nat gateway"
+  default     = "1200"
+}
+
+variable "udp_idle_timeout_sec" {
+  type        = string
+  description = "Timeout (in seconds) for UDP connections. Defaults to 30s if not set."
+  default     = "30"
+}
+
+variable "icmp_idle_timeout_sec" {
+  type        = string
+  description = "Timeout (in seconds) for ICMP connections. Defaults to 30s if not set."
+  default     = "30"
 }
 
 variable "kubernetes_version" {
@@ -90,7 +120,7 @@ variable "daily_maintenance_window_start" {
 variable "node_pool_disk_size" {
   type        = number
   description = "Disk Size for GKE Nodes"
-  default     = 20
+  default     = 100
 }
 
 variable "gke_preemptible" {
@@ -107,7 +137,7 @@ variable "gke_auto_min_count" {
 
 variable "gke_auto_max_count" {
   type        = number
-  description = "The maximum number of VMs in the pool per zone (zones) as it is a regioinal cluster"
+  description = "The maximum number of VMs in the pool per zone (zones) as it is a regional cluster"
   default     = 2
 }
 
@@ -129,6 +159,11 @@ variable "oauth_scopes" {
   ]
 }
 
+variable "release_channel" {
+  type        = string
+  description = "The release channel of this cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR` and `STABLE`. Defaults to `UNSPECIFIED`."
+  default     = null
+}
 
 variable "istio_config" {
   type        = bool

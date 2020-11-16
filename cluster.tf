@@ -3,20 +3,28 @@ resource "google_container_cluster" "primary" {
   name     = "${var.project_id}-cluster${var.cluster_name_suffix}"
   location = local.location
   provider = google-beta
-  # So we create the smallest possible default node pool and immediately delete it. Using node pools
+
+  # We can't create a cluster with no node pool defined, but we want to only use separately managed node pools.
+  # So we create the smallest possible default node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
   min_master_version       = var.kubernetes_version
   node_version             = var.kubernetes_version
+
   # Point to stackdriver api
   monitoring_service = "monitoring.googleapis.com/kubernetes"
   logging_service    = "logging.googleapis.com/kubernetes"
   network            = google_compute_network.network.self_link
   subnetwork         = google_compute_subnetwork.subnetwork.self_link
 
+  release_channel {
+    channel = var.release_channel
+  }
+
   private_cluster_config {
-    enable_private_nodes   = true
-    master_ipv4_cidr_block = var.master_ipv4_cidr_block
+    enable_private_endpoint = false
+    enable_private_nodes    = true
+    master_ipv4_cidr_block  = var.master_ipv4_cidr_block
   }
 
   ip_allocation_policy {
@@ -36,6 +44,7 @@ resource "google_container_cluster" "primary" {
       display_name = "All"
     }
   }
+
   lifecycle {
     prevent_destroy = true
     ignore_changes = [
@@ -103,4 +112,3 @@ resource "google_container_node_pool" "primary_nodes" {
     create_before_destroy = true
   }
 }
-
