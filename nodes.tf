@@ -1,7 +1,7 @@
 resource "google_container_node_pool" "primary_nodes" {
   provider = google-beta
 
-  name    = "${var.project_id}-node-pool${var.cluster_name_suffix}-${var.gke_instance_type}"
+  name    = "${local.cluster_name}-node-pool-${var.gke_instance_type}"
   cluster = google_container_cluster.primary.name
 
   project  = var.project_id

@@ -1,6 +1,6 @@
 ## Private & Regional Cluster
 resource "google_container_cluster" "primary" {
-  name     = "${var.project_id}-cluster${var.cluster_name_suffix}"
+  name     = "${local.cluster_name}-gke"
   location = local.location
   provider = google-beta
 
@@ -55,7 +55,7 @@ resource "google_container_cluster" "primary" {
   }
 
   lifecycle {
-    # prevent_destroy = true
+    prevent_destroy = true
     ignore_changes = [
       node_version,
       resource_labels,
@@ -94,7 +94,7 @@ resource "google_container_cluster" "primary" {
 resource "google_kms_crypto_key" "encryption_key" {
   provider = google-beta
 
-  name     = "${var.project_id}-cluster${var.cluster_name_suffix}-encryption-key"
+  name     = "${local.cluster_name}-encryption-key"
   key_ring = google_kms_key_ring.encryption_key_ring.self_link
   purpose  = "ENCRYPT_DECRYPT"
 
@@ -104,7 +104,7 @@ resource "google_kms_crypto_key" "encryption_key" {
 resource "google_kms_key_ring" "encryption_key_ring" {
   provider = google-beta
 
-  name     = "${var.project_id}-cluster${var.cluster_name_suffix}-encryption-key-ring"
+  name     = "${local.cluster_name}-encryption-key-ring"
   location = local.location
   project  = var.project_id
 }
