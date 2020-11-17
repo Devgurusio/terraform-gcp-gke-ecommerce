@@ -9,6 +9,7 @@ variable "project_id" {
   description = "The project ID to host the cluster in (required)"
 }
 
+## K8s related settings
 variable "cluster_name_suffix" {
   type        = string
   description = "A suffix to append to the default cluster name"
@@ -23,8 +24,8 @@ variable "regional" {
 
 variable "region" {
   type        = string
-  description = "The region to host the cluster in"
-  default     = null
+  description = "The region to host the cluster in. Default: us-central1"
+  default     = "us-central1"
 }
 
 variable "zones" {
@@ -51,58 +52,10 @@ variable "services_ipv4_cidr_block" {
   default     = "192.168.64.0/18"
 }
 
-variable "subnet_ip_cidr_range" {
-  type        = string
-  description = "IPv4 CIDR Block for Subnetwork"
-  default     = "10.160.0.0/17"
-}
-
-variable "nat_ip_count" {
-  type        = number
-  description = "The number of NAT IPs"
-  default     = 1
-}
-
-variable "min_ports_per_vm" {
-  type        = string
-  description = "Max number of concurrent outgoing request to IP:PORT_PROTOCOL per VM"
-  default     = "8192"
-}
-
-variable "tcp_transitory_idle_timeout_sec" {
-  type        = string
-  description = "The tcp trans idle timeout in sec used by the nat gateway"
-  default     = "30"
-}
-
-variable "tcp_established_idle_timeout_sec" {
-  type        = string
-  description = "The tcp established idle timeout in sec used by the nat gateway"
-  default     = "1200"
-}
-
-variable "udp_idle_timeout_sec" {
-  type        = string
-  description = "Timeout (in seconds) for UDP connections. Defaults to 30s if not set."
-  default     = "30"
-}
-
-variable "icmp_idle_timeout_sec" {
-  type        = string
-  description = "Timeout (in seconds) for ICMP connections. Defaults to 30s if not set."
-  default     = "30"
-}
-
 variable "kubernetes_version" {
   type        = string
   description = "The Kubernetes version of the masters. If set to 'latest' it will pull latest available version in the selected region."
   default     = "latest"
-}
-
-variable "node_version" {
-  type        = string
-  description = "The Kubernetes version of the node pools. Defaults kubernetes_version (master) variable and can be overridden for individual node pools by setting the `version` key on them. Must be empyty or set the same as master at cluster creation."
-  default     = ""
 }
 
 variable "gke_instance_type" {
@@ -162,11 +115,48 @@ variable "oauth_scopes" {
 variable "release_channel" {
   type        = string
   description = "The release channel of this cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR` and `STABLE`. Defaults to `UNSPECIFIED`."
-  default     = null
+  default     = "UNSPECIFIED"
 }
 
-variable "istio_config" {
-  type        = bool
-  description = "Enable istio addon"
-  default     = false
+# Network related settings
+variable "subnet_ip_cidr_range" {
+  type        = string
+  description = "IPv4 CIDR Block for Subnetwork"
+  default     = "10.160.0.0/17"
+}
+
+variable "nat_ip_count" {
+  type        = number
+  description = "The number of NAT IPs"
+  default     = 1
+}
+
+variable "min_ports_per_vm" {
+  type        = string
+  description = "Max number of concurrent outgoing request to IP:PORT_PROTOCOL per VM"
+  default     = "8192"
+}
+
+variable "tcp_transitory_idle_timeout_sec" {
+  type        = string
+  description = "The tcp trans idle timeout in sec used by the nat gateway"
+  default     = "30"
+}
+
+variable "tcp_established_idle_timeout_sec" {
+  type        = string
+  description = "The tcp established idle timeout in sec used by the nat gateway"
+  default     = "1200"
+}
+
+variable "udp_idle_timeout_sec" {
+  type        = string
+  description = "Timeout (in seconds) for UDP connections. Defaults to 30s if not set."
+  default     = "30"
+}
+
+variable "icmp_idle_timeout_sec" {
+  type        = string
+  description = "Timeout (in seconds) for ICMP connections. Defaults to 30s if not set."
+  default     = "30"
 }
