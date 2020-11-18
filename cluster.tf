@@ -1,21 +1,27 @@
 ## Private & Regional Cluster
 resource "google_container_cluster" "primary" {
-  name     = "${local.cluster_name}-gke"
-  location = local.location
   provider = google-beta
 
-  # We can't create a cluster with no node pool defined, but we want to only use separately managed node pools.
-  # So we create the smallest possible default node pool and immediately delete it.
+  name               = "${local.cluster_name}-gke"
+  location           = local.location
+  min_master_version = local.master_version
+
+  # We can't create a cluster with no node pool defined, but we want to only use separately managed
+  # node pools. So we create the smallest possible default node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
 
-  min_master_version = local.master_version
-
-  # Point to stackdriver api
+  # The monitoring service that the cluster should write metrics to. Using the
+  # 'monitoring.googleapis.com/kubernetes' option makes use of new Stackdriver
+  # Kubernetes integration.
   monitoring_service = "monitoring.googleapis.com/kubernetes"
-  logging_service    = "logging.googleapis.com/kubernetes"
-  network            = google_compute_network.network.self_link
-  subnetwork         = google_compute_subnetwork.subnetwork.self_link
+  # The loggingservice that the cluster should write logs to. Using the
+  # 'logging.googleapis.com/kubernetes' option makes use of new Stackdriver
+  # Kubernetes integration.
+  logging_service = "logging.googleapis.com/kubernetes"
+
+  network    = google_compute_network.network.self_link
+  subnetwork = google_compute_subnetwork.subnetwork.self_link
 
   release_channel {
     channel = var.release_channel
@@ -27,8 +33,6 @@ resource "google_container_cluster" "primary" {
     master_ipv4_cidr_block  = var.master_ipv4_cidr_block
   }
 
-  # TODO: Shouldn't we set this property?
-  # https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/container_cluster#networking_mode
   networking_mode = "VPC_NATIVE"
   ip_allocation_policy {
     cluster_ipv4_cidr_block  = var.cluster_ipv4_cidr_block
@@ -40,10 +44,21 @@ resource "google_container_cluster" "primary" {
     environment = var.environment
   }
 
-  # We should encrypt etcd cluster for security
+  # We encrypt ETCD data at rest
   database_encryption {
     state    = "ENCRYPTED"
-    key_name = google_kms_crypto_key.encryption_key.self_link
+    key_name = google_kms_crypto_key.master_encryption_key.self_link
+  }
+
+  master_auth {
+    # Setting an empty username and password explicitly disables basic auth
+    username = ""
+    password = ""
+
+    # Whether client certificate authorization is enabled for this cluster.
+    client_certificate_config {
+      issue_client_certificate = false
+    }
   }
 
   master_authorized_networks_config {
@@ -52,14 +67,6 @@ resource "google_container_cluster" "primary" {
       cidr_block   = "0.0.0.0/0"
       display_name = "All"
     }
-  }
-
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = [
-      node_version,
-      resource_labels,
-    ]
   }
 
   maintenance_policy {
@@ -72,7 +79,7 @@ resource "google_container_cluster" "primary" {
     # This is the default value but we want to be sure it will be always enabled
     # This property will automatically create node pools based on resources consumption
     horizontal_pod_autoscaling {
-      disabled = false
+      disabled = ! var.enable_hpa
     }
 
     # Removed the to configure it as currently we don't want to deploy istio addon
@@ -88,30 +95,38 @@ resource "google_container_cluster" "primary" {
 
   }
 
+  lifecycle {
+    # prevent_destroy = true
+    ignore_changes = [
+      node_version,
+      resource_labels,
+    ]
+  }
+
   depends_on = [google_compute_router_nat.advanced-nat, google_compute_router.router]
 }
 
-resource "google_kms_crypto_key" "encryption_key" {
+resource "google_kms_crypto_key" "master_encryption_key" {
   provider = google-beta
 
-  name     = "${local.cluster_name}-encryption-key"
-  key_ring = google_kms_key_ring.encryption_key_ring.self_link
+  name     = "${local.cluster_name}-master-encryption-key"
+  key_ring = google_kms_key_ring.master_encryption_key_ring.self_link
   purpose  = "ENCRYPT_DECRYPT"
 
   # TODO: Should we add a rotation period?
 }
 
-resource "google_kms_key_ring" "encryption_key_ring" {
+resource "google_kms_key_ring" "master_encryption_key_ring" {
   provider = google-beta
 
-  name     = "${local.cluster_name}-encryption-key-ring"
+  name     = "${local.cluster_name}-master-encryption-key-ring"
   location = local.location
   project  = var.project_id
 }
 
 # Allow GKE to use the KMS key to encrypt/decrypt
-resource "google_kms_crypto_key_iam_member" "crypto_key" {
-  crypto_key_id = google_kms_crypto_key.encryption_key.id
+resource "google_kms_crypto_key_iam_member" "master_crypto_key" {
+  crypto_key_id = google_kms_crypto_key.master_encryption_key.id
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   member        = "serviceAccount:service-${data.google_project.current.number}@container-engine-robot.iam.gserviceaccount.com"
 }

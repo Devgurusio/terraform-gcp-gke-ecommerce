@@ -43,7 +43,7 @@ variable "master_ipv4_cidr_block" {
 variable "cluster_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Kubernetes Pods"
-  default     = "192.168.0.0/18"
+  default     = "10.1.0.0/16"
 }
 
 variable "services_ipv4_cidr_block" {
@@ -76,16 +76,28 @@ variable "node_pool_disk_size" {
   default     = 100
 }
 
+variable "node_pool_disk_type" {
+  type        = string
+  description = "Disk type for GKE nodes. Available values: pd-stadard, pd-ssd.Default: pd-standard"
+  default     = "pd-standard"
+}
+
 variable "gke_preemptible" {
   type        = bool
   description = "GKE Preemtible nodes"
   default     = true
 }
 
+variable "gke_initial_node_count" {
+  type        = number
+  description = "The initial number of VMs in the pool per group (zones) as it is a regional cluster"
+  default     = 1
+}
+
 variable "gke_auto_min_count" {
   type        = number
   description = "The minimum number of VMs in the pool per group (zones) as it is a regional cluster"
-  default     = 1
+  default     = 0
 }
 
 variable "gke_auto_max_count" {
@@ -94,35 +106,23 @@ variable "gke_auto_max_count" {
   default     = 2
 }
 
-variable "oauth_scopes" {
-  default = [
-    "https://www.googleapis.com/auth/compute",
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/devstorage.read_only",
-    "https://www.googleapis.com/auth/taskqueue",
-    "https://www.googleapis.com/auth/sqlservice.admin",
-    "https://www.googleapis.com/auth/monitoring.write",
-    "https://www.googleapis.com/auth/servicecontrol",
-    "https://www.googleapis.com/auth/service.management.readonly",
-    "https://www.googleapis.com/auth/trace.append",
-    "https://www.googleapis.com/auth/monitoring",
-    "https://www.googleapis.com/auth/logging.write",
-    "https://www.googleapis.com/auth/pubsub",
-    "https://www.googleapis.com/auth/cloud_debugger",
-  ]
-}
-
 variable "release_channel" {
   type        = string
   description = "The release channel of this cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR` and `STABLE`. Defaults to `UNSPECIFIED`."
   default     = "UNSPECIFIED"
 }
 
+variable "enable_hpa" {
+  type        = bool
+  description = "Toggles horizontal pod autoscaling addon. Default: true"
+  default     = true
+}
+
 # Network related settings
 variable "subnet_ip_cidr_range" {
   type        = string
   description = "IPv4 CIDR Block for Subnetwork"
-  default     = "10.160.0.0/17"
+  default     = "10.0.0.0/16"
 }
 
 variable "nat_ip_count" {

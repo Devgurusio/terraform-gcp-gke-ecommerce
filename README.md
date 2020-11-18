@@ -95,7 +95,7 @@ gcloud projects add-iam-policy-binding ${TF_VAR_project_id} \
 
 gcloud projects add-iam-policy-binding ${TF_VAR_project_id} \
 --member serviceAccount:terraform@${TF_VAR_project_id}.iam.gserviceaccount.com \
---role roles/cloudkms.admin
+--role roles/iam.securityAdmin
 
 ```
 
