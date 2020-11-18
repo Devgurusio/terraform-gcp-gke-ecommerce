@@ -93,6 +93,15 @@ resource "google_container_cluster" "primary" {
       enabled = true
     }
 
+    network_policy_config {
+      disabled = ! var.enable_netpol
+    }
+
+  }
+
+  network_policy {
+    enabled  = var.enable_netpol
+    provider = upper(var.netpol_provider)
   }
 
   lifecycle {

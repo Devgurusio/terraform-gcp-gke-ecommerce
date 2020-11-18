@@ -118,6 +118,18 @@ variable "enable_hpa" {
   default     = true
 }
 
+variable "enable_netpol" {
+  type        = bool
+  description = "Toggles network policies enforcement feature. Default: false"
+  default     = false
+}
+
+variable "netpol_provider" {
+  type        = string
+  description = "Sets the network policy provider. Default: CALICO"
+  default     = "CALICO"
+}
+
 # Network related settings
 variable "subnet_ip_cidr_range" {
   type        = string
