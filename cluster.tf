@@ -50,12 +50,13 @@ resource "google_container_cluster" "primary" {
     key_name = google_kms_crypto_key.master_encryption_key.self_link
   }
 
+  # We're setting these configs following GKE best practices
+  # https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster
   master_auth {
     # Setting an empty username and password explicitly disables basic auth
     username = ""
     password = ""
 
-    # Whether client certificate authorization is enabled for this cluster.
     client_certificate_config {
       issue_client_certificate = false
     }

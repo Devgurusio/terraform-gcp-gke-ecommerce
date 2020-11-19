@@ -43,6 +43,8 @@ resource "google_container_node_pool" "primary_nodes" {
     # https://cloud.google.com/compute/docs/disks/customer-managed-encryption#command-line
     boot_disk_kms_key = google_kms_crypto_key.node_encryption_key.self_link
 
+    image_type = "COS_CONTAINERD"
+
     tags = [var.environment]
   }
 

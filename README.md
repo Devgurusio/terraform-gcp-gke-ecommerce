@@ -1,3 +1,5 @@
+[![GitHub Super-Linter](https://github.com/Devgurusio/terraform-gcp-gke-ecommerce/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+
 # gke-commerce-bootstrap
 Google Kubernetes Engine starter kit to bootstrap an e-commerce site based on microservices.
 Differences with official cluster:
@@ -13,6 +15,13 @@ To facilitate the creation of Google Cloud components we have different modules 
 More info [here](https://cloud.google.com/foundation-toolkit/)
 
 ## Pre-requisites
+Setup pre-commit check
+```bash
+brew install pre-commit
+pre-commit install
+```
+
+Setup terraform module
 ```bash
 gcloud organizations list
 gcloud beta billing accounts list
