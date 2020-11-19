@@ -73,13 +73,13 @@ variable "daily_maintenance_window_start" {
 variable "node_pool_disk_size" {
   type        = number
   description = "Disk Size for GKE Nodes"
-  default     = 100
+  default     = 40
 }
 
 variable "node_pool_disk_type" {
   type        = string
   description = "Disk type for GKE nodes. Available values: pd-stadard, pd-ssd.Default: pd-standard"
-  default     = "pd-standard"
+  default     = "pd-ssd"
 }
 
 variable "gke_preemptible" {
