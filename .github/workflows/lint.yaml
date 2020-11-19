@@ -1,4 +1,3 @@
----
 ###########################
 ###########################
 ## Linter GitHub Actions ##
@@ -57,21 +56,23 @@ jobs:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      #######################################
+      # Post the linter output as a comment #
+      #######################################
       - name: Comment Linting Output
         uses: actions/github-script@0.9.0
         if: github.event_name == 'pull_request'
-        steps:
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `
-            #### Linter plan finished
-            Please find linting results [here](${{ steps.lint.outputs.stdout }})
-            `
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `
+          #### Linter plan finished
+          Please find linting results [here](${{ steps.lint.outputs.stdout }})
+          `
 
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
