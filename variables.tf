@@ -9,6 +9,7 @@ variable "project_id" {
   description = "The project ID to host the cluster in (required)"
 }
 
+## K8s related settings
 variable "cluster_name_suffix" {
   type        = string
   description = "A suffix to append to the default cluster name"
@@ -23,8 +24,8 @@ variable "regional" {
 
 variable "region" {
   type        = string
-  description = "The region to host the cluster in"
-  default     = null
+  description = "The region to host the cluster in. Default: us-central1"
+  default     = "us-central1"
 }
 
 variable "zones" {
@@ -36,43 +37,25 @@ variable "zones" {
 variable "master_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Master Nodes"
-  default     = "10.0.1.0/28"
+  default     = "172.16.0.0/28"
 }
 
 variable "cluster_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Kubernetes Pods"
-  default     = "10.13.0.0/20"
+  default     = "192.168.0.0/18"
 }
 
 variable "services_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Kubernetes services"
-  default     = "10.13.16.0/20"
-}
-
-variable "subnet_ip_cidr_range" {
-  type        = string
-  description = "IPv4 CIDR Block for SubNetwork"
-  default     = "192.168.16.0/20"
-}
-
-variable "nat_ip_count" {
-  type        = number
-  description = "The number of NAT IPs"
-  default     = 1
+  default     = "192.168.64.0/18"
 }
 
 variable "kubernetes_version" {
   type        = string
   description = "The Kubernetes version of the masters. If set to 'latest' it will pull latest available version in the selected region."
   default     = "latest"
-}
-
-variable "node_version" {
-  type        = string
-  description = "The Kubernetes version of the node pools. Defaults kubernetes_version (master) variable and can be overridden for individual node pools by setting the `version` key on them. Must be empyty or set the same as master at cluster creation."
-  default     = ""
 }
 
 variable "gke_instance_type" {
@@ -90,7 +73,13 @@ variable "daily_maintenance_window_start" {
 variable "node_pool_disk_size" {
   type        = number
   description = "Disk Size for GKE Nodes"
-  default     = 20
+  default     = 40
+}
+
+variable "node_pool_disk_type" {
+  type        = string
+  description = "Disk type for GKE nodes. Available values: pd-stadard, pd-ssd.Default: pd-standard"
+  default     = "pd-ssd"
 }
 
 variable "gke_preemptible" {
@@ -99,39 +88,87 @@ variable "gke_preemptible" {
   default     = true
 }
 
+variable "gke_initial_node_count" {
+  type        = number
+  description = "The initial number of VMs in the pool per group (zones) as it is a regional cluster"
+  default     = 1
+}
+
 variable "gke_auto_min_count" {
   type        = number
   description = "The minimum number of VMs in the pool per group (zones) as it is a regional cluster"
-  default     = 1
+  default     = 0
 }
 
 variable "gke_auto_max_count" {
   type        = number
-  description = "The maximum number of VMs in the pool per zone (zones) as it is a regioinal cluster"
+  description = "The maximum number of VMs in the pool per zone (zones) as it is a regional cluster"
   default     = 2
 }
 
-variable "oauth_scopes" {
-  default = [
-    "https://www.googleapis.com/auth/compute",
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/devstorage.read_only",
-    "https://www.googleapis.com/auth/taskqueue",
-    "https://www.googleapis.com/auth/sqlservice.admin",
-    "https://www.googleapis.com/auth/monitoring.write",
-    "https://www.googleapis.com/auth/servicecontrol",
-    "https://www.googleapis.com/auth/service.management.readonly",
-    "https://www.googleapis.com/auth/trace.append",
-    "https://www.googleapis.com/auth/monitoring",
-    "https://www.googleapis.com/auth/logging.write",
-    "https://www.googleapis.com/auth/pubsub",
-    "https://www.googleapis.com/auth/cloud_debugger",
-  ]
+variable "release_channel" {
+  type        = string
+  description = "The release channel of this cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR` and `STABLE`. Defaults to `UNSPECIFIED`."
+  default     = "UNSPECIFIED"
 }
 
-
-variable "istio_config" {
+variable "enable_hpa" {
   type        = bool
-  description = "Enable istio addon"
+  description = "Toggles horizontal pod autoscaling addon. Default: true"
+  default     = true
+}
+
+variable "enable_netpol" {
+  type        = bool
+  description = "Toggles network policies enforcement feature. Default: false"
   default     = false
+}
+
+variable "netpol_provider" {
+  type        = string
+  description = "Sets the network policy provider. Default: CALICO"
+  default     = "CALICO"
+}
+
+# Network related settings
+variable "subnet_ip_cidr_range" {
+  type        = string
+  description = "IPv4 CIDR Block for Subnetwork"
+  default     = "10.0.0.0/17"
+}
+
+variable "nat_ip_count" {
+  type        = number
+  description = "The number of NAT IPs"
+  default     = 1
+}
+
+variable "min_ports_per_vm" {
+  type        = string
+  description = "Max number of concurrent outgoing request to IP:PORT_PROTOCOL per VM"
+  default     = "8192"
+}
+
+variable "tcp_transitory_idle_timeout_sec" {
+  type        = string
+  description = "The tcp trans idle timeout in sec used by the nat gateway"
+  default     = "30"
+}
+
+variable "tcp_established_idle_timeout_sec" {
+  type        = string
+  description = "The tcp established idle timeout in sec used by the nat gateway"
+  default     = "1200"
+}
+
+variable "udp_idle_timeout_sec" {
+  type        = string
+  description = "Timeout (in seconds) for UDP connections. Defaults to 30s if not set."
+  default     = "30"
+}
+
+variable "icmp_idle_timeout_sec" {
+  type        = string
+  description = "Timeout (in seconds) for ICMP connections. Defaults to 30s if not set."
+  default     = "30"
 }

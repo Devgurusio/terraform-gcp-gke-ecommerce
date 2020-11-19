@@ -14,6 +14,10 @@ output "google_container_cluster" {
   value = google_container_cluster.primary.name
 }
 
-output "k8singress_ip" {
-  value = google_compute_global_address.k8singress.address
+output "k8s_ingress_ip" {
+  value = google_compute_address.k8s_ingress_ip.address
+}
+
+output "nat_address" {
+  value = google_compute_address.nat_manual_ip.*.address
 }
