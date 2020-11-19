@@ -43,7 +43,7 @@ variable "master_ipv4_cidr_block" {
 variable "cluster_ipv4_cidr_block" {
   type        = string
   description = "IPv4 CIDR Block for Kubernetes Pods"
-  default     = "10.1.0.0/16"
+  default     = "192.168.0.0/18"
 }
 
 variable "services_ipv4_cidr_block" {
@@ -134,7 +134,7 @@ variable "netpol_provider" {
 variable "subnet_ip_cidr_range" {
   type        = string
   description = "IPv4 CIDR Block for Subnetwork"
-  default     = "10.0.0.0/16"
+  default     = "10.0.0.0/17"
 }
 
 variable "nat_ip_count" {
