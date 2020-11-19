@@ -64,15 +64,15 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const output = `
-          #### Linter plan finished
-          Please find linting results [here](${{ steps.lint.outputs.stdout }})
-          `
+          script: |
+            const output = `
+            #### Linter plan finished
+            Please find linting results [here](${{ steps.lint.outputs.stdout }})
+            `
 
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: output
-          })
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
