@@ -1,0 +1,22 @@
+name: Check
+on:
+  - push
+  - pull_request
+
+jobs:
+  fmt:
+    name: Code Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.13.5
+      - name: format
+        run: terraform fmt -check -diff
+      - name: init
+        run: terraform init
+      - name: validate
+        run: terraform validate -no-color
