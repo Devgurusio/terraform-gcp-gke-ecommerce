@@ -4,6 +4,9 @@ locals {
   region     = var.region == null ? join("-", slice(split("-", var.zones[0]), 0, 2)) : var.region
   zone_count = length(var.zones)
 
+  // for regional cluster - use var.zones if provided, use available otherwise, for zonal cluster use var.zones with first element extracted
+  node_locations = var.regional ? coalescelist(compact(var.zones), sort(random_shuffle.available_zones.result)) : slice(var.zones, 1, length(var.zones))
+
   // Kubernetes version
   master_version_regional = var.kubernetes_version != "latest" ? var.kubernetes_version : data.google_container_engine_versions.region.latest_master_version
   master_version_zonal    = var.kubernetes_version != "latest" ? var.kubernetes_version : data.google_container_engine_versions.zone.latest_master_version
@@ -13,6 +16,11 @@ locals {
   # This variable will be prepended to all related resources
   cluster_suffix = var.cluster_name_suffix != "" ? "-${var.cluster_name_suffix}" : ""
   cluster_name   = "${var.project_id}-cluster${local.cluster_suffix}"
+}
+
+resource "random_shuffle" "available_zones" {
+  input        = data.google_compute_zones.available.names
+  result_count = 3
 }
 
 /******************************************

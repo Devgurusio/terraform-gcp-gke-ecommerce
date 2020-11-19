@@ -4,6 +4,7 @@ resource "google_container_cluster" "primary" {
 
   name               = "${local.cluster_name}-gke"
   location           = local.location
+  node_locations     = local.node_locations
   min_master_version = local.master_version
 
   # We can't create a cluster with no node pool defined, but we want to only use separately managed
