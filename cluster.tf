@@ -45,10 +45,9 @@ resource "google_container_cluster" "primary" {
     environment = var.environment
   }
 
-  # We encrypt ETCD data at rest
   database_encryption {
-    state    = "ENCRYPTED"
-    key_name = google_kms_crypto_key.master_encryption_key.self_link
+    key_name = var.database_encryption.key_name
+    state    = var.database_encryption.state
   }
 
   # We're setting these configs following GKE best practices
@@ -103,11 +102,11 @@ resource "google_container_cluster" "primary" {
 
   network_policy {
     enabled  = var.enable_netpol
-    provider = upper(var.netpol_provider)
+    provider = var.enable_netpol ? upper(var.netpol_provider) : null
   }
 
   lifecycle {
-    prevent_destroy = true
+    # prevent_destroy = true
     ignore_changes = [
       node_version,
       resource_labels,
@@ -115,29 +114,4 @@ resource "google_container_cluster" "primary" {
   }
 
   depends_on = [google_compute_router_nat.advanced-nat, google_compute_router.router]
-}
-
-resource "google_kms_crypto_key" "master_encryption_key" {
-  provider = google-beta
-
-  name     = "${local.cluster_name}-master-encryption-key"
-  key_ring = google_kms_key_ring.master_encryption_key_ring.self_link
-  purpose  = "ENCRYPT_DECRYPT"
-
-  # TODO: Should we add a rotation period?
-}
-
-resource "google_kms_key_ring" "master_encryption_key_ring" {
-  provider = google-beta
-
-  name     = "${local.cluster_name}-master-encryption-key-ring"
-  location = local.location
-  project  = var.project_id
-}
-
-# Allow GKE to use the KMS key to encrypt/decrypt
-resource "google_kms_crypto_key_iam_member" "master_crypto_key" {
-  crypto_key_id = google_kms_crypto_key.master_encryption_key.id
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:service-${data.google_project.current.number}@container-engine-robot.iam.gserviceaccount.com"
 }
