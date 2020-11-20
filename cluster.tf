@@ -106,7 +106,7 @@ resource "google_container_cluster" "primary" {
   }
 
   lifecycle {
-    # prevent_destroy = true
+    prevent_destroy = true
     ignore_changes = [
       node_version,
       resource_labels,
