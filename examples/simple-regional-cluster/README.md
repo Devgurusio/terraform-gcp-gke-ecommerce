@@ -1,0 +1,14 @@
+# Simple Regional Cluster
+This is the easiest way to spin up a GKE cluster. Just set the variables `project_id` and `region`
+and you're ready to go.
+
+The cluster will have the following features:
+* Regional cluster using 3 zones
+* Latest kubernetes version available
+* Unspecified release channel suscription
+* Node pool with `n1-standard-1` instances
+* Max instances per zone: 2
+* Master ETCD cluster encryption disabled
+* Nodes boot volumes encryption disabled
+* Network policies disabled
+* Metrics server deployed. This means HPAs will be able to autoscale
