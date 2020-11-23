@@ -61,7 +61,7 @@ variable "kubernetes_version" {
 variable "gke_instance_type" {
   type        = string
   description = "The worker instance type"
-  default     = "n1-standard-1"
+  default     = "n1-standard-2"
 }
 
 variable "daily_maintenance_window_start" {
