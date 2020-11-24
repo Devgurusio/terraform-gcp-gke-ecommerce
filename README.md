@@ -146,7 +146,8 @@ Based on the version [Cloud Foundation Toolkit 1.4.3](https://github.com/terrafo
 ## Usage
 Export your google credentials
 ```shell script
-export GOOGLE_APPLICATION_CREDENTIALS=../../keys/terraform-sa.json
+export GOOGLE_APPLICATION_CREDENTIALS=../../keys/YOUR_PROJECT_CREDENTIALS.json
+export TF_VAR_project_id="YOUR_PROJECT_ID"
 ```
 Apply the example available
 ```shell script

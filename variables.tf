@@ -61,7 +61,7 @@ variable "kubernetes_version" {
 variable "gke_instance_type" {
   type        = string
   description = "The worker instance type"
-  default     = "n1-standard-1"
+  default     = "n1-standard-2"
 }
 
 variable "daily_maintenance_window_start" {
@@ -171,4 +171,19 @@ variable "icmp_idle_timeout_sec" {
   type        = string
   description = "Timeout (in seconds) for ICMP connections. Defaults to 30s if not set."
   default     = "30"
+}
+
+variable "database_encryption" {
+  type        = object({ state = string, key_name = string })
+  description = "Application-layer Secrets Encryption settings. The object format is {state = string, key_name = string}. Valid values of state are: \"ENCRYPTED\"; \"DECRYPTED\". key_name is the name of a CloudKMS key."
+  default = {
+    state    = "DECRYPTED"
+    key_name = ""
+  }
+}
+
+variable "boot_disk_kms_key" {
+  type        = string
+  description = "CloudKMS key_name to use to encrypt the nodes boot disk. Default: null (encryption disabled)"
+  default     = null
 }

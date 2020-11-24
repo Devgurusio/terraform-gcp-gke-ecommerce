@@ -53,3 +53,23 @@ resource "google_compute_router_nat" "advanced-nat" {
     filter = "ERRORS_ONLY"
   }
 }
+
+# Istio rule only for private GKE clusters: Need to open 15017 needed by the Pilot discovery validation webhook
+resource "google_compute_firewall" "istio_discovery_rule" {
+  count         = var.regional ? 1 : 0
+  name          = "istio-discovery-allow-firewall"
+  project       = var.project_id
+  network       = google_compute_network.network.self_link
+  priority      = 1000
+  direction     = "INGRESS"
+  source_ranges = [var.master_ipv4_cidr_block]
+  // As we don't know the network tag, we allow for all
+  //target_tags   = ["gke-${var.project-id}-cluster-node-gke-28f667bc-node"]
+
+  allow {
+    protocol = "tcp"
+    ports    = ["443", "10250", "15017"]
+  }
+
+  depends_on = [google_compute_network.network]
+}

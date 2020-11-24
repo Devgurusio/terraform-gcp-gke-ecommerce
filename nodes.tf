@@ -40,9 +40,9 @@ resource "google_container_node_pool" "primary_nodes" {
       disable-legacy-endpoints = "true"
     }
 
-    # For security we're encrypting the node root volume
+    # For security we recommend encrypting the node root volume
     # https://cloud.google.com/compute/docs/disks/customer-managed-encryption#command-line
-    boot_disk_kms_key = google_kms_crypto_key.node_encryption_key.self_link
+    boot_disk_kms_key = var.boot_disk_kms_key
 
     image_type = "COS_CONTAINERD"
 
@@ -77,29 +77,4 @@ resource "google_container_node_pool" "primary_nodes" {
     ]
     create_before_destroy = true
   }
-}
-
-resource "google_kms_crypto_key" "node_encryption_key" {
-  provider = google-beta
-
-  name     = "${local.cluster_name}-node-encryption-key"
-  key_ring = google_kms_key_ring.node_encryption_key_ring.self_link
-  purpose  = "ENCRYPT_DECRYPT"
-
-  # TODO: Should we add a rotation period?
-}
-
-resource "google_kms_key_ring" "node_encryption_key_ring" {
-  provider = google-beta
-
-  name     = "${local.cluster_name}-node-encryption-key-ring"
-  location = local.location
-  project  = var.project_id
-}
-
-# Allow GCE to use the KMS key to encrypt/decrypt
-resource "google_kms_crypto_key_iam_member" "node_crypto_key" {
-  crypto_key_id = google_kms_crypto_key.node_encryption_key.id
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:service-${data.google_project.current.number}@compute-system.iam.gserviceaccount.com"
 }
