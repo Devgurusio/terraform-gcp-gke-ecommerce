@@ -50,8 +50,8 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 
   management {
-    auto_repair  = true
-    auto_upgrade = true
+    auto_repair  = var.node_auto_repair
+    auto_upgrade = var.node_auto_upgrade
   }
 
   # Setting initial_node_count to 1 so at least default workloads can be deployed
