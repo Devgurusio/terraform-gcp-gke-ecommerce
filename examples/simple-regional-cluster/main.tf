@@ -6,7 +6,7 @@ module "gke" {
   region     = var.region
 
   node_auto_upgrade = false
-  node_auto_repair  = false
+  node_auto_repair  = true
 
   cluster_name_suffix = "regional"
 }
