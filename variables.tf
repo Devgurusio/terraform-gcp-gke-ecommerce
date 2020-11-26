@@ -106,6 +106,18 @@ variable "gke_auto_max_count" {
   default     = 2
 }
 
+variable "node_auto_repair" {
+  type        = bool
+  description = "Whether the nodes will be automatically repaired"
+  default     = true
+}
+
+variable "node_auto_upgrade" {
+  type        = bool
+  description = "Whether the nodes will be automatically upgraded"
+  default     = true
+}
+
 variable "release_channel" {
   type        = string
   description = "The release channel of this cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR` and `STABLE`. Defaults to `UNSPECIFIED`."
