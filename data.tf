@@ -15,7 +15,9 @@ locals {
 
   # This variable will be prepended to all related resources
   cluster_suffix = var.cluster_name_suffix != "" ? "-${var.cluster_name_suffix}" : ""
-  cluster_name   = "${var.project_id}-cluster${local.cluster_suffix}"
+  # Allow to override project prefix or truncate to prevent resource names longer than 40 characters
+  project_prefix = var.project_name_override == "" ? substr(var.project_id, 0, 28) : var.project_name_override
+  cluster_name   = "${local.project_prefix}-cluster${local.cluster_suffix}"
 }
 
 resource "random_shuffle" "available_zones" {
