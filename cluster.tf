@@ -80,7 +80,7 @@ resource "google_container_cluster" "primary" {
     # This is the default value but we want to be sure it will be always enabled
     # This property will automatically create node pools based on resources consumption
     horizontal_pod_autoscaling {
-      disabled = ! var.enable_hpa
+      disabled = !var.enable_hpa
     }
 
     # Removed the to configure it as currently we don't want to deploy istio addon
@@ -95,7 +95,7 @@ resource "google_container_cluster" "primary" {
     }
 
     network_policy_config {
-      disabled = ! var.enable_netpol
+      disabled = !var.enable_netpol
     }
 
   }

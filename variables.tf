@@ -9,6 +9,12 @@ variable "project_id" {
   description = "The project ID to host the cluster in (required)"
 }
 
+variable "project_name_override" {
+  type        = string
+  description = "Override project name prefix used in all the resources"
+  default     = ""
+}
+
 ## K8s related settings
 variable "cluster_name_suffix" {
   type        = string
