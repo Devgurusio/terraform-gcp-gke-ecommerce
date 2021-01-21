@@ -8,10 +8,10 @@ locals {
   node_locations = var.regional ? coalescelist(compact(var.zones), sort(random_shuffle.available_zones.result)) : slice(var.zones, 1, length(var.zones))
 
   // Kubernetes version
-  master_version_regional = var.kubernetes_version != "latest" ? var.kubernetes_version : data.google_container_engine_versions.region.latest_master_version
-  master_version_zonal    = var.kubernetes_version != "latest" ? var.kubernetes_version : data.google_container_engine_versions.zone.latest_master_version
+  min_master_version_regional = var.min_kubernetes_version != "latest" ? var.min_kubernetes_version : data.google_container_engine_versions.region.latest_master_version
+  min_master_version_zonal    = var.min_kubernetes_version != "latest" ? var.min_kubernetes_version : data.google_container_engine_versions.zone.latest_master_version
 
-  master_version = var.regional ? local.master_version_regional : local.master_version_zonal
+  min_master_version = var.regional ? local.min_master_version_regional : local.min_master_version_zonal
 
   # This variable will be prepended to all related resources
   cluster_suffix = var.cluster_name_suffix != "" ? "-${var.cluster_name_suffix}" : ""

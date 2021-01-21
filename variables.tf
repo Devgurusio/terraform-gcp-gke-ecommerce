@@ -58,9 +58,9 @@ variable "services_ipv4_cidr_block" {
   default     = "192.168.64.0/18"
 }
 
-variable "kubernetes_version" {
+variable "min_kubernetes_version" {
   type        = string
-  description = "The Kubernetes version of the masters. If set to 'latest' it will pull latest available version in the selected region."
+  description = "The Kubernetes MINIMUM version of the masters. GCP can perform upgrades, there is no max_version field. If set to 'latest' it will pull latest available version in the selected region."
   default     = "latest"
 }
 
