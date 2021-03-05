@@ -8,6 +8,7 @@ resource "google_container_node_pool" "primary_nodes" {
 
   project        = var.project_id
   location       = local.location
+  // if it is a regional cluster set all the zones, if it is zonal it will be null, no additional zones (multi-zonal)
   node_locations = local.node_locations
 
   node_config {
