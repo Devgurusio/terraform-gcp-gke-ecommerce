@@ -62,8 +62,7 @@ resource "google_compute_firewall" "istio_discovery_rule" {
   priority      = 1000
   direction     = "INGRESS"
   source_ranges = [var.master_ipv4_cidr_block]
-  // As we don't know the network tag, we allow for all
-  //target_tags   = ["gke-${var.project-id}-cluster-node-gke-28f667bc-node"]
+  target_tags   = [var.environment]
 
   allow {
     protocol = "tcp"
