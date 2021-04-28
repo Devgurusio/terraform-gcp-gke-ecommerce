@@ -38,7 +38,7 @@ variable "project_id" {
 
 module "gke-ecommerce" {
   source  = "Devgurusio/gke-ecommerce/gcp"
-  version = "1.2.3"
+  version = "1.4.0"
 
   project_id = var.project_id
 }
