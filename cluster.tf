@@ -28,6 +28,12 @@ resource "google_container_cluster" "primary" {
     channel = var.release_channel
   }
 
+  enable_shielded_nodes = true
+  workload_identity_config {
+    # Currently, the only supported identity namespace is the project's default.
+    identity_namespace = "${var.project_id}.svc.id.goog"
+  }
+
   private_cluster_config {
     enable_private_endpoint = false
     enable_private_nodes    = true
@@ -106,6 +112,7 @@ resource "google_container_cluster" "primary" {
   }
 
   lifecycle {
+    prevent_destroy = false
     ignore_changes = [
       node_version,
       resource_labels,

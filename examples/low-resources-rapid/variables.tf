@@ -12,5 +12,5 @@ variable "region" {
 variable "zones" {
   type        = list(string)
   description = "When regional cluster, 3 zones in which it would be deployed. If zonal, just 1 location"
-  default     = ["us-central1-a", "us-central1-c", "us-central1-f"]
+  default     = ["us-central1-a"]
 }

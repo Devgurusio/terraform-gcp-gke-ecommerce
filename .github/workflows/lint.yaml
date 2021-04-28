@@ -47,7 +47,7 @@ jobs:
       ################################
       - name: Lint Code Base
         id: lint
-        uses: github/super-linter@v3.13.5
+        uses: github/super-linter@v3.15.3
         env:
           OUTPUT_FOLDER:
           VALIDATE_TERRAFORM: true

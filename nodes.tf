@@ -1,9 +1,27 @@
+# This keepers list is based on the variables that will force a new node pool resource to be created
+resource "random_id" "node_pool_name" {
+  byte_length = 2
+  # Node pool name must be less than 40 characters so we left 5 characters for the suffix
+  prefix = format("%s-", substr("${var.gke_instance_type}-node-pool", 0, 35))
+  keepers = {
+    environment     = var.environment,
+    project_id      = var.project_id,
+    disk_size_gb    = var.node_pool_disk_size,
+    disk_type       = var.node_pool_disk_type,
+    machine_type    = var.gke_instance_type,
+    preemptible     = var.gke_preemptible,
+    service_account = google_service_account.sa.email,
+    image_type      = "COS_CONTAINERD"
+  }
+}
+
 # TODO: add support to deploy several node-pools
 resource "google_container_node_pool" "primary_nodes" {
   provider = google-beta
 
-  # Node pool name must be less than 40 characters
-  name    = substr("${var.gke_instance_type}-node-pool", 0, 40)
+  # This random suffix allows us to re-create the node pool by creating the new one and once that's
+  # up and running the old one will be decomisioned.
+  name    = random_id.node_pool_name.hex
   cluster = google_container_cluster.primary.name
 
   project  = var.project_id
@@ -36,6 +54,15 @@ resource "google_container_node_pool" "primary_nodes" {
       environment = var.environment
     }
 
+    workload_metadata_config {
+      node_metadata = "GKE_METADATA_SERVER"
+    }
+
+    shielded_instance_config {
+      enable_integrity_monitoring = true
+      enable_secure_boot          = true
+    }
+
     metadata = {
       # https://cloud.google.com/kubernetes-engine/docs/how-to/protecting-cluster-metadata
       disable-legacy-endpoints = "true"
@@ -45,7 +72,7 @@ resource "google_container_node_pool" "primary_nodes" {
     # https://cloud.google.com/compute/docs/disks/customer-managed-encryption#command-line
     boot_disk_kms_key = var.boot_disk_kms_key
 
-    image_type = "COS_CONTAINERD"
+    image_type = random_id.node_pool_name.keepers.image_type
 
     tags = [var.environment]
   }
