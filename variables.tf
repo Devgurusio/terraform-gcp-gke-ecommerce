@@ -212,6 +212,6 @@ variable "kubelet_config" {
     cpu_cfs_quota        = bool,
     cpu_cfs_quota_period = string
   })
-  description = "Node kubelet configuration"
+  description = "Node kubelet configuration. Possible values can be found at https://cloud.google.com/kubernetes-engine/docs/how-to/node-system-config#kubelet-options"
   default     = null
 }
