@@ -205,3 +205,13 @@ variable "boot_disk_kms_key" {
   description = "CloudKMS key_name to use to encrypt the nodes boot disk. Default: null (encryption disabled)"
   default     = null
 }
+
+variable "kubelet_config" {
+  type = object({
+    cpu_manager_policy   = string,
+    cpu_cfs_quota        = bool,
+    cpu_cfs_quota_period = string
+  })
+  description = "Node kubelet configuration. Possible values can be found at https://cloud.google.com/kubernetes-engine/docs/how-to/node-system-config#kubelet-options"
+  default     = null
+}

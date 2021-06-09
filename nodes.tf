@@ -75,6 +75,16 @@ resource "google_container_node_pool" "primary_nodes" {
     image_type = random_id.node_pool_name.keepers.image_type
 
     tags = [var.environment]
+
+    dynamic "kubelet_config" {
+      for_each = var.kubelet_config == null ? [] : [var.kubelet_config]
+      content {
+        cpu_manager_policy   = kubelet_config.value.cpu_manager_policy
+        cpu_cfs_quota        = kubelet_config.value.cpu_cfs_quota
+        cpu_cfs_quota_period = kubelet_config.value.cpu_cfs_quota_period
+      }
+    }
+
   }
 
   management {
