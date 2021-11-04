@@ -99,10 +99,17 @@ resource "google_container_node_pool" "primary_nodes" {
     max_node_count = var.gke_auto_max_count
   }
 
-  # In the future we should be able to optimize and parametrize this values
   upgrade_settings {
-    max_surge       = 1
-    max_unavailable = 0
+    # https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-upgrades#optimizing-surge
+    # For nodes that use Spot VMs surge upgrade values are ignored because there is no availability guarantee
+    # Max extra nodes that can be added to update
+    max_surge = var.gke_max_surge
+    # Max unavailable nodes during the upgrade (0 less disruptive)
+    max_unavailable = var.gke_max_unavailable
+    # Nodes upgraded simultaneously = max_surge + max_unavailable. Limited to 20
+    # Balanced least disruptive:      max_surge=1 max_unavailable=0
+    # Fast disruptive:                max_surge=0 max_unavailable=20
+    # Fast expensive less disruptive: max_surge=20 max_unavailable=0
   }
 
   lifecycle {
