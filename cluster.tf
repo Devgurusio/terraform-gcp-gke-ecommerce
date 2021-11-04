@@ -30,8 +30,8 @@ resource "google_container_cluster" "primary" {
 
   enable_shielded_nodes = true
   workload_identity_config {
-    # Currently, the only supported identity namespace is the project's default.
-    identity_namespace = "${var.project_id}.svc.id.goog"
+    # Currently, the only supported identity namespace is the project of the cluster.
+    workload_pool = "${var.project_id}.svc.id.goog"
   }
 
   private_cluster_config {
@@ -59,10 +59,6 @@ resource "google_container_cluster" "primary" {
   # We're setting these configs following GKE best practices
   # https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster
   master_auth {
-    # Setting an empty username and password explicitly disables basic auth
-    username = ""
-    password = ""
-
     client_certificate_config {
       issue_client_certificate = false
     }
