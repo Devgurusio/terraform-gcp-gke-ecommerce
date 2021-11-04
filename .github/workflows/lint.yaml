@@ -15,9 +15,9 @@ name: Lint Code Base
 #############################
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 ###############
 # Set the Job #
@@ -27,7 +27,7 @@ jobs:
     # Name the Job
     name: Lint Code Base
     # Set the agent to run on
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     ##################
     # Load all steps #
@@ -47,12 +47,12 @@ jobs:
       ################################
       - name: Lint Code Base
         id: lint
-        uses: github/super-linter@v3.15.3
+        uses: github/super-linter@v4
         env:
           OUTPUT_FOLDER:
           VALIDATE_TERRAFORM: true
           # Terrascan reports some false positives. Disabling it for now
           # VALIDATE_TERRAFORM_TERRASCAN: true
           VALIDATE_YAML: true
-          DEFAULT_BRANCH: master
+          DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

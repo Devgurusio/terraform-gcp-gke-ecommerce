@@ -6,7 +6,7 @@ module "gke" {
   regional            = false
   region              = var.region
   zones               = var.zones
-  gke_instance_type   = "e2-standard-4"
+  gke_instance_type   = "e2-standard-2"
   release_channel     = "RAPID"
   gke_preemptible     = true
 }
