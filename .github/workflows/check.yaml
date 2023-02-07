@@ -19,6 +19,6 @@ jobs:
       - name: format
         run: terraform fmt -check -diff
       - name: init
-        run: terraform init
+        run: terraform init -upgrade
       - name: validate
         run: terraform validate -no-color
