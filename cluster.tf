@@ -1,6 +1,7 @@
 ## Private & Regional Cluster
 resource "google_container_cluster" "primary" {
   provider = google-beta
+  project  = var.project_id
 
   name               = "${local.cluster_name}-gke"
   location           = local.location
