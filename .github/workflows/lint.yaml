@@ -27,7 +27,7 @@ jobs:
     # Name the Job
     name: Lint Code Base
     # Set the agent to run on
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     ##################
     # Load all steps #
@@ -37,7 +37,7 @@ jobs:
       # Checkout the code base #
       ##########################
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
@@ -47,7 +47,7 @@ jobs:
       ################################
       - name: Lint Code Base
         id: lint
-        uses: github/super-linter@v4
+        uses: super-linter/super-linter@v7.2.1
         env:
           OUTPUT_FOLDER:
           VALIDATE_TERRAFORM: true
