@@ -1,11 +1,11 @@
 ## Private & Regional Cluster
 resource "google_container_cluster" "primary" {
-  provider = google-beta
 
-  name               = "${local.cluster_name}-gke"
-  location           = local.location
-  node_locations     = local.node_locations
-  min_master_version = local.min_master_version
+  name                = "${local.cluster_name}-gke"
+  location            = local.location
+  node_locations      = local.node_locations
+  min_master_version  = local.min_master_version
+  deletion_protection = var.deletion_protection
 
   # We can't create a cluster with no node pool defined, but we want to only use separately managed
   # node pools. So we create the smallest possible default node pool and immediately delete it.
@@ -15,11 +15,11 @@ resource "google_container_cluster" "primary" {
   # The monitoring service that the cluster should write metrics to. Using the
   # 'monitoring.googleapis.com/kubernetes' option makes use of new Stackdriver
   # Kubernetes integration.
-  monitoring_service = "monitoring.googleapis.com/kubernetes"
+  monitoring_service = var.monitoring_service
   # The loggingservice that the cluster should write logs to. Using the
   # 'logging.googleapis.com/kubernetes' option makes use of new Stackdriver
   # Kubernetes integration.
-  logging_service = "logging.googleapis.com/kubernetes"
+  logging_service = var.logging_service
 
   network    = google_compute_network.network.self_link
   subnetwork = google_compute_subnetwork.subnetwork.self_link
@@ -85,11 +85,6 @@ resource "google_container_cluster" "primary" {
       disabled = !var.enable_hpa
     }
 
-    # Removed the to configure it as currently we don't want to deploy istio addon
-    istio_config {
-      disabled = true
-    }
-
     # CSI is a storage specification that allows cloud providers to provide vendor-specific support
     # for storage features outside the k8s binary
     gce_persistent_disk_csi_driver_config {
@@ -107,6 +102,31 @@ resource "google_container_cluster" "primary" {
     provider = var.enable_netpol ? upper(var.netpol_provider) : null
   }
 
+  dynamic "cluster_autoscaling" {
+    for_each = var.enable_cluster_autoscaler ? [1] : []
+    content {
+      enabled             = true
+      autoscaling_profile = var.autoscaling_profile
+      resource_limits {
+        resource_type = "cpu"
+        minimum       = var.cluster_autoscaler_cpu_min
+        maximum       = var.cluster_autoscaler_cpu_max
+      }
+      resource_limits {
+        resource_type = "memory"
+        minimum       = var.cluster_autoscaler_memory_min_gb
+        maximum       = var.cluster_autoscaler_memory_max_gb
+      }
+    }
+  }
+
+  dynamic "vertical_pod_autoscaling" {
+    for_each = var.enable_vpa ? [1] : []
+    content {
+      enabled = true
+    }
+  }
+
   lifecycle {
     prevent_destroy = false
     ignore_changes = [
@@ -114,6 +134,5 @@ resource "google_container_cluster" "primary" {
       resource_labels,
     ]
   }
-
   depends_on = [google_compute_router_nat.advanced-nat, google_compute_router.router]
 }

@@ -17,7 +17,7 @@ resource "random_id" "node_pool_name" {
 
 # TODO: add support to deploy several node-pools
 resource "google_container_node_pool" "primary_nodes" {
-  provider = google-beta
+  provider = google
 
   # This random suffix allows us to re-create the node pool by creating the new one and once that's
   # up and running the old one will be decomisioned.

@@ -227,3 +227,87 @@ variable "kubelet_config" {
   description = "Node kubelet configuration. Possible values can be found at https://cloud.google.com/kubernetes-engine/docs/how-to/node-system-config#kubelet-options"
   default     = null
 }
+
+variable "google_compute_firewall_name" {
+  type        = string
+  description = "The name of the firewall rule to be created"
+  default     = "istio-discovery-allow-firewall"
+}
+
+variable "deletion_protection" {
+  type        = bool
+  description = "Whether to enable deletion protection on the cluster"
+  default     = true
+}
+
+variable "service_account_id" {
+  type        = string
+  description = "The service account id to use for the GKE cluster"
+  default     = null
+}
+variable "logging_service" {
+  type        = string
+  description = "The logging service that the cluster should write logs to. Available options include logging.googleapis.com, logging.googleapis.com/kubernetes (beta), and none"
+  default     = "logging.googleapis.com/kubernetes"
+
+  validation {
+    condition     = contains(["logging.googleapis.com", "logging.googleapis.com/kubernetes", "none"], var.logging_service)
+    error_message = "The logging_service must be one of 'logging.googleapis.com', 'logging.googleapis.com/kubernetes', or 'none'."
+  }
+}
+
+variable "monitoring_service" {
+  type        = string
+  description = "The monitoring service that the cluster should write metrics to. Automatically send metrics from pods in the cluster to the Google Cloud Monitoring API. VM metrics will be collected by Google Compute Engine regardless of this setting Available options include monitoring.googleapis.com, monitoring.googleapis.com/kubernetes (beta) and none"
+  default     = "monitoring.googleapis.com/kubernetes"
+
+  validation {
+    condition     = contains(["monitoring.googleapis.com", "monitoring.googleapis.com/kubernetes", "none"], var.monitoring_service)
+    error_message = "The monitoring_service must be one of 'monitoring.googleapis.com', 'monitoring.googleapis.com/kubernetes', or 'none'."
+  }
+}
+
+variable "enable_cluster_autoscaler" {
+  type        = bool
+  description = "Whether to enable cluster autoscaler"
+  default     = false
+}
+
+variable "autoscaling_profile" {
+  type        = string
+  description = "The autoscaling profile to use. Valid values are: balanced, cost, performance. Default: balanced"
+  default     = "BALANCED"
+
+  validation {
+    condition     = contains(["BALANCED", "OPTIMIZE_UTILIZATION"], upper(var.autoscaling_profile))
+    error_message = "The autoscaling_profile must be one of 'BALANCED' or 'OPTIMIZE_UTILIZATION'."
+  }
+}
+
+variable "cluster_autoscaler_cpu_min" {
+  type        = number
+  description = "Minimum number of CPUs in the cluster autoscaler"
+  default     = 1
+}
+
+variable "cluster_autoscaler_cpu_max" {
+  type        = number
+  description = "Maximum number of CPUs in the cluster autoscaler"
+  default     = 10
+}
+variable "cluster_autoscaler_memory_min_gb" {
+  type        = number
+  description = "Minimum amount of memory in the cluster autoscaler (in GB)"
+  default     = 1
+}
+variable "cluster_autoscaler_memory_max_gb" {
+  type        = number
+  description = "Maximum amount of memory in the cluster autoscaler (in GB)"
+  default     = 10
+}
+
+variable "enable_vpa" {
+  type        = bool
+  description = "Whether to enable vertical pod autoscaler"
+  default     = false
+}
