@@ -1,8 +1,13 @@
+locals {
+  account_id = var.service_account_id != null ? var.service_account_id : "sa-${trim(substr(local.cluster_name, 0, min(27, length(local.cluster_name))), "-")}"
+}
+
+
 resource "google_service_account" "sa" {
   provider = google
 
   # GCP SA account id must match the following regex: ^[a-z](?:[-a-z0-9]{4,28}[a-z0-9])$
-  account_id   = "sa-${substr(local.cluster_name, 0, min(27, length(local.cluster_name)))}"
+  account_id   = local.account_id
   display_name = "Minimal service account for GKE cluster ${local.cluster_name}"
   project      = var.project_id
 }
